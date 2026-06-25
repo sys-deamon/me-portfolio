@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taqi's Games &amp; Devlogs</title>
+<meta name="description" content="Games, experiments and devlogs by Taqi.">
+
+<style>
+  :root{
+    --paper:#FBF6EC;
+    --ink:#2B2622;
+    --soft:#7C7268;
+    --line:#E4DACA;
+    --accent:#DD5B7A;
+    --accent-soft:#FBEAEF;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.5; -webkit-font-smoothing:antialiased; }
+
+  /* ---- Viewport Width & Padding ---- */
+  .wrap{ max-width:550px; margin:0 auto; padding:40px 22px 90px; }
+  a{ color:var(--ink); }
+
+  /* ---- home header ---- */
+  .hero{ text-align:center; }
+  .hero .name{ margin-top:14px; }
+  .name{ font-size:clamp(24px,6vw,36px); font-weight:800; margin:0; letter-spacing:-0.01em; }
+  .tagline{ margin:10px 0 0; font-size:15px; }
+  .intro{ margin:14px 0 0; color:var(--soft); font-size:14px; }
+  .quote{ margin:0; color:var(--soft); font-style:italic; font-size:clamp(10px,1.9vw,12px); line-height:1.25; letter-spacing:-0.01em; white-space:nowrap; }
+  .quote cite{ display:block; margin-top:6px; font-style:normal; font-size:12px; color:var(--soft); text-align:center; }
+  .links{ margin-top:16px; display:flex; flex-wrap:wrap; gap:8px 16px; font-size:14px; }
+  .links a{ text-decoration:none; border-bottom:1px solid var(--line); padding-bottom:1px; }
+  .links a:hover{ color:var(--accent); border-color:var(--accent); }
+
+  /* ---- year + line divider ---- */
+  .year{ display:flex; align-items:center; gap:14px; margin:42px 0 18px; }
+  .year h2{ font-size:clamp(20px,5vw,26px); font-weight:800; margin:0; }
+  .year .line{ flex:1; height:0; border-top:1px solid var(--line); }
+
+  /* ---- home post card ---- */
+  .post{ display:block; text-decoration:none; color:inherit; margin-bottom:28px; }
+  /* Thumbnail: full image for 800×200 banners */
+  .thumb-wrap{ width:100%; border-radius:6px; overflow:hidden; background:var(--accent-soft); line-height:0; }
+  .thumb{ width:100%; height:auto; display:block; }
+  .thumb-ph{ width:100%; aspect-ratio:4/1; display:grid; place-items:center; font-size:46px; color:#caa9b2; }
+  .post-text{ margin-top:8px; font-size:15px; line-height:1.45; }
+  .post-title{ font-weight:700; }
+  .post-desc{ color:var(--soft); }
+  .post:hover .post-title{ text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:2px; }
+  .post-static{ cursor:default; }
+  .post-static:hover .post-title{ text-decoration:none; }
+
+  /* ---- back link ---- */
+  .back{ display:inline-block; margin-bottom:22px; color:var(--soft); text-decoration:none; font-size:14px; }
+  .back:hover{ color:var(--accent); }
+
+  /* ---- post detail page ---- */
+  .detail{ display:flex; gap:34px; flex-wrap:wrap; align-items:flex-start; }
+  .detail-main{ flex:1 1 260px; min-width:0; }
+  /* Detail images: full-width, stacked, centered */
+  .detail-thumb-wrap{ width:100%; display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .detail-thumb{ width:100%; height:auto; display:block; border-radius:6px; }
+  .detail-title{ font-size:clamp(20px,5vw,26px); font-weight:800; margin:16px 0 0; }
+  .detail-desc{ color:var(--soft); margin:10px 0 0; font-size:15px; }
+  .play{ display:inline-block; margin-top:14px; font-weight:600; font-size:14px; color:var(--ink); text-decoration:none; border-bottom:2px solid var(--accent); padding-bottom:1px; }
+  .play:hover{ color:var(--accent); }
+  .play-soon{ display:inline-block; margin-top:14px; font-size:14px; color:var(--soft); }
+  .detail-side{ flex:0 0 160px; }
+  @media (max-width:480px){ .detail-side{ flex-basis:100%; } }
+  .side-h{ font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--soft); margin:0 0 10px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  .devlist{ list-style:none; margin:0; padding:0; }
+  .devlist li{ margin-bottom:14px; }
+  .devlist a{ text-decoration:none; color:var(--ink); display:block; }
+  .devlist a:hover .dl-title{ text-decoration:underline; text-decoration-color:var(--accent); }
+  .dl-date{ font-size:11px; font-weight:700; color:var(--accent); }
+  .dl-title{ font-size:13.5px; margin-top:2px; }
+  .side-empty{ color:var(--soft); font-size:13px; }
+
+  /* ---- devlog reading page ---- */
+  .reading{ max-width:450px; }
+  .read-date{ font-size:12px; font-weight:700; color:var(--accent); }
+  .read-title{ font-size:clamp(22px,6vw,30px); font-weight:800; margin:6px 0 24px; line-height:1.15; }
+
+  /* ---- rendered markdown ---- */
+  .md-h{ margin:24px 0 8px; line-height:1.25; }
+  h1.md-h{ font-size:22px; } h2.md-h{ font-size:19px; } h3.md-h{ font-size:17px; } h4.md-h{ font-size:15px; }
+  .md-p{ margin:0 0 14px; }
+  .md-ul,.md-ol{ margin:0 0 14px; padding-left:20px; }
+  .md-ul li,.md-ol li{ margin:4px 0; }
+  .md-quote{ margin:0 0 14px; padding:8px 14px; border-left:3px solid var(--accent); color:var(--soft); background:var(--accent-soft); border-radius:4px; }
+  .md-pre{ margin:0 0 16px; padding:14px 16px; background:#2B2622; color:#F4ECE0; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5; }
+  .md-pre code{ font-family:var(--mono); }
+  .md-code{ background:#efe6d6; padding:1px 6px; border-radius:4px; font-family:var(--mono); font-size:.9em; }
+  .md-img{ max-width:100%; height:auto; border-radius:6px; margin:8px 0; }
+  .md-hr{ border:0; border-top:1px solid var(--line); margin:24px 0; }
+  .reading a{ color:var(--accent); }
+
+  /* ---- footer ---- */
+  .foot{ margin-top:70px; padding-top:20px; border-top:1px solid var(--line); color:var(--soft); font-size:13px; }
+  .foot a{ text-decoration:none; border-bottom:1px solid var(--line); }
+  .foot a:hover{ color:var(--accent); border-color:var(--accent); }
+
+  a:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:4px; }
+  @media (prefers-reduced-motion:reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+<div class="wrap"><div id="app"></div></div>
+
+
+<!-- =========================== -->
+<!-- POSTS  (the home page list) -->
+<!-- =========================== -->
+<script>
+const POSTS = [
+
+  {
+    id: "fps",
+    year: 2026,
+    thumb: "",
+    title: "3D FPS Game (Unity)",
+    desc: "A solo-built first-person shooter as my University's Final Year Project (FYP). Heavily inspired by COD MW 2007. I made literally everthing the gameplay, 3D art, animations and cinematic briefings myself except the sfx and music.",
+    card: {  showThumb: true, showTitle: true, showDesc: true },
+    link: { label: "\u25B6 Watch on LinkedIn", url: "" }
+  },
+
+    {
+    id: "nothing-2025",
+    year: 2025,
+    title: "",
+    desc: "Nothing :( Doing university stuff.",
+    card: { static: true, showThumb: false, showTitle: false, showDesc: true }
+  },
+
+    {
+    id: "cricketx",
+    year: 2024,
+    thumb: "",
+    title: "Cricket X: The Art of Batting",
+    desc: "Created a VR/AR game in Unity during my fulltime job at XREV Studios & shipped it to Meta Store. I dont own it though but I was one of the pioneers of the project.",
+    card: {  showThumb: true, showTitle: true, showDesc: true },
+    link: { label: "\u25B6 Buy on Meta Store", url: "https://www.meta.com/experiences/cricket-x/6986676891412191/?srsltid=AfmBOoqxAh8i9YZ1PgCPm59PJxrUbv6cR-zlkL8Y2mLPGyYx7Xz8HGJa" }
+  },
+
+  {
+    id: "dodge",
+    year: 2024,
+    thumb: "taqi-project-files/dodge.png",
+    title: "Dodge: A Simple C++ Game",
+    desc: "I experimented with the Raylib library following the Gamedev.tv course on making games with Cpp and Raylib.",
+    link: { label: "\u25B6 Download from itch.io", url: "https://fork5221.itch.io/dodge-a-c-game" }
+  },
+
+  {
+    id: "weirdjam",
+    year: 2023,
+    thumb: "taqi-project-files/weird.png",
+    title: "Booga Booga Lolo-calypse",
+    desc: "A stupid 2D survival game, built in a weekend for itch.io's Weird Game Jam.",
+    link: { label: "\u25B6 Download on itch.io", url: "https://fork5221.itch.io/booga-booga-lolo-calypse" }
+  },
+
+  {
+    id: "blockbreaker",
+    year: 2023,
+    thumb: "taqi-project-files/blockychad.png",
+    title: "Neon Breaker",
+    desc: "A neon 2D block-breaker with two levels, built while working through a GameDev.tv 2D game course.",
+    link: { label: "\u25B6 Play in browser", url: "https://fork5221.itch.io/neon-breakout-block-breaker" }
+  },
+
+    {
+    id: "nothing-2022",
+    year: 2022,
+      title: "",
+    desc: "Just learning.",
+        card: { static: true, showThumb: false, showTitle: false }
+  },
+];
+</script>
+
+
+<!-- ===================== -->
+<!-- DEVLOGS (in Markdown) -->
+<!-- ===================== -->
+
+
+<!-- ====== -->
+<!-- ENGINE -->
+<!-- ====== -->
+<script>
+(function () {
+  const app = document.getElementById("app");
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+  const isPlaceholder = url => !url || url.startsWith("#PASTE");
+  const postById = id => POSTS.find(p => p.id === id);
+
+  // ---- scroll + view state persistence via sessionStorage ----
+  // We save { hash, scrollY } on every scroll and hashchange so that
+  // when the user navigates back (browser back or re-opens same tab session)
+  // we restore exactly where they were.
+  const STATE_KEY = "ytaqi_state";
+
+  function saveState(){
+    try {
+      sessionStorage.setItem(STATE_KEY, JSON.stringify({
+        hash: location.hash,
+        scrollY: window.scrollY
+      }));
+    } catch(e){}
+  }
+
+  window.addEventListener("scroll", saveState, { passive: true });
+
+  // collect devlogs for a post (in the order their blocks appear in the file)
+  function devlogsFor(id){
+    return [...document.querySelectorAll('script[type="text/markdown"]')]
+      .filter(s => s.dataset.post === id)
+      .map(s => ({ date: s.dataset.date || "", title: s.dataset.title || "", md: dedent(s.textContent) }));
+  }
+  function dedent(t){
+    t = t.replace(/^\n+/, "").replace(/\s+$/, "");
+    const lines = t.split("\n");
+    const indents = lines.filter(l => l.trim()).map(l => l.match(/^ */)[0].length);
+    const min = indents.length ? Math.min(...indents) : 0;
+    return lines.map(l => l.slice(min)).join("\n");
+  }
+
+  // ---- tiny self-contained Markdown -> HTML ----
+  function md(src){
+    src = src.replace(/\r\n?/g, "\n");
+    const fences = [];
+    src = src.replace(/```[^\n]*\n([\s\S]*?)```/g, (m, code) => {
+      fences.push('<pre class="md-pre"><code>' + esc(code.replace(/\n$/, "")) + "</code></pre>");
+      return "\uE000B" + (fences.length - 1) + "\uE000";
+    });
+    const codes = [];
+    src = src.replace(/`([^`\n]+)`/g, (m, c) => {
+      codes.push('<code class="md-code">' + esc(c) + "</code>");
+      return "\uE000I" + (codes.length - 1) + "\uE000";
+    });
+    function inline(t){
+      t = esc(t);
+      t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, '<img class="md-img" alt="$1" src="$2">');
+      t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+      t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      t = t.replace(/__([^_]+)__/g, "<strong>$1</strong>");
+      t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+      t = t.replace(/(^|[^_])_([^_\n]+)_/g, "$1<em>$2</em>");
+      t = t.replace(/\uE000I(\d+)\uE000/g, (m, n) => codes[+n]);
+      return t;
+    }
+    const lines = src.split("\n");
+    let out = "", i = 0;
+    while (i < lines.length){
+      const line = lines[i];
+      let m;
+      if ((m = line.match(/^\uE000B(\d+)\uE000\s*$/))) { out += fences[+m[1]]; i++; continue; }
+      if (/^\s*$/.test(line)) { i++; continue; }
+      if ((m = line.match(/^(#{1,6})\s+(.*)$/))) { const l = m[1].length; out += `<h${l} class="md-h">${inline(m[2])}</h${l}>`; i++; continue; }
+      if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { out += '<hr class="md-hr">'; i++; continue; }
+      if (/^\s*>\s?/.test(line)) {
+        const buf = [];
+        while (i < lines.length && /^\s*>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^\s*>\s?/, "")); i++; }
+        out += '<blockquote class="md-quote">' + inline(buf.join(" ")) + "</blockquote>"; continue;
+      }
+      if (/^\s*[-*+]\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*[-*+]\s+/.test(lines[i])) { items.push("<li>" + inline(lines[i].replace(/^\s*[-*+]\s+/, "")) + "</li>"); i++; }
+        out += '<ul class="md-ul">' + items.join("") + "</ul>"; continue;
+      }
+      if (/^\s*\d+\.\s+/.test(line)) {
+        const items = [];
+        while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) { items.push("<li>" + inline(lines[i].replace(/^\s*\d+\.\s+/, "")) + "</li>"); i++; }
+        out += '<ol class="md-ol">' + items.join("") + "</ol>"; continue;
+      }
+      const para = [];
+      while (i < lines.length && !/^\s*$/.test(lines[i])
+        && !/^(#{1,6})\s+/.test(lines[i]) && !/^\s*[-*+]\s+/.test(lines[i])
+        && !/^\s*\d+\.\s+/.test(lines[i]) && !/^\s*>\s?/.test(lines[i])
+        && !/^\uE000B\d+\uE000\s*$/.test(lines[i])) { para.push(lines[i]); i++; }
+      out += '<p class="md-p">' + inline(para.join("\n")).replace(/\n/g, "<br>") + "</p>";
+    }
+    return out;
+  }
+
+  // ---- thumbnail helpers ----
+  // Home card: first image only, full width, no crop
+  function homeThumb(p){
+    const src = Array.isArray(p.thumb) ? p.thumb[0] : p.thumb;
+    return src
+      ? `<div class="thumb-wrap"><img class="thumb" src="${esc(src)}" alt="${esc(p.title)}" data-emoji="${esc(p.emoji || "🎮")}"></div>`
+      : `<div class="thumb-wrap"><div class="thumb-ph">${esc(p.emoji || "🎮")}</div></div>`;
+  }
+  function homeCardConfig(p){
+    const src = Array.isArray(p.thumb) ? p.thumb[0] : p.thumb;
+    const card = p.card || {};
+    return {
+      static: Boolean(card.static),
+      showThumb: card.showThumb ?? Boolean(src),
+      showTitle: card.showTitle ?? Boolean(p.title),
+      showDesc: card.showDesc ?? Boolean(p.desc)
+    };
+  }
+  // Detail page: all images, stacked, full width
+  function detailThumbs(p){
+    const srcs = Array.isArray(p.thumb) ? p.thumb : (p.thumb ? [p.thumb] : []);
+    if (!srcs.length) return `<div class="thumb-wrap"><div class="thumb-ph">${esc(p.emoji || "🎮")}</div></div>`;
+    return `<div class="detail-thumb-wrap">` +
+      srcs.map(src => `<img class="detail-thumb" src="${esc(src)}" alt="${esc(p.title)}" data-emoji="${esc(p.emoji || "🎮")}">`).join("") +
+      `</div>`;
+  }
+  function wireThumbs(){
+    app.querySelectorAll(".thumb, .detail-thumb").forEach(img => {
+      const swap = () => {
+        const d = document.createElement("div");
+        d.className = "thumb-ph";
+        d.textContent = img.dataset.emoji || "🎮";
+        img.replaceWith(d);
+      };
+      img.addEventListener("error", swap);
+      if (img.complete && img.naturalWidth === 0) swap();
+    });
+  }
+
+  // ---- views ----
+  function viewHome(){
+    const years = [...new Set(POSTS.map(p => p.year))].sort((a, b) => b - a);
+    let html = `
+      <header class="hero">
+        <p class="quote">“Attain perfection (or master a skill) so that you may become beloved by the world.”<cite>Saadi Shirazi</cite></p>
+        <h1 class="name">Yahya Taqi</h1>
+        <p class="tagline">I do stuff and explore.</p>
+        <p class="intro">Everything i've shipped, newest first. click a post to open it and read its devlogs. (scroll down and the older stuff gets sillier.)</p>
+        <nav class="links" aria-label="Links">
+          <a href="https://fork5221.itch.io" target="_blank" rel="noopener">itch.io</a>
+          <a href="https://www.linkedin.com/in/yahya-taqi/" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/sys-deamon" target="_blank" rel="noopener">GitHub</a>
+          <a href="mailto:m.yahya.taqi@gmail.com">email</a>
+        </nav>
+      </header>`;
+    years.forEach(y => {
+      html += `<section><div class="year"><h2>${esc(y)}</h2><span class="line"></span></div>`;
+      POSTS.filter(p => p.year === y).forEach(p => {
+        // external: true → clicking goes straight to external URL, no detail page
+        const isExternal = p.link && p.link.external && !isPlaceholder(p.link.url);
+        const href = isExternal
+          ? esc(p.link.url)
+          : `#/post/${encodeURIComponent(p.id)}`;
+        const target = isExternal ? ` target="_blank" rel="noopener"` : "";
+        const card = homeCardConfig(p);
+        const title = p.title || "";
+        const desc = p.desc || "";
+        const cardText = [
+          card.showTitle && title ? `<span class="post-title">${esc(title)}</span>` : "",
+          card.showDesc && desc ? `<span class="post-desc">${card.showTitle && title ? " — " : ""}${esc(desc)}</span>` : ""
+        ].join("");
+        const cardOpen = card.static ? `<div class="post post-static" aria-disabled="true">` : `<a class="post" href="${href}"${target}>`;
+        const cardClose = card.static ? `</div>` : `</a>`;
+        html += `${cardOpen}
+            ${card.showThumb ? homeThumb(p) : ""}
+            ${cardText ? `<div class="post-text">${cardText}</div>` : ""}
+          ${cardClose}`;
+      });
+      html += `</section>`;
+    });
+    html += `<footer class="foot">Built &amp; maintained by Taqi. More shutff when realization hits me.</footer>`;
+    app.innerHTML = html;
+    wireThumbs();
+  }
+
+  function viewPost(id){
+    const p = postById(id);
+    if (!p) return viewHome();
+    if (p.card && p.card.static) return viewHome();
+    const logs = devlogsFor(id);
+    const linkHTML = p.link
+      ? (isPlaceholder(p.link.url)
+          ? `<span class="play-soon">${esc(p.link.label)} — coming soon</span>`
+          : `<a class="play" href="${esc(p.link.url)}" target="_blank" rel="noopener">${esc(p.link.label)}</a>`)
+      : "";
+    const list = logs.length
+      ? `<ul class="devlist">` + logs.map((d, idx) =>
+          `<li><a href="#/post/${encodeURIComponent(id)}/devlog/${idx}">
+             <span class="dl-date">${esc(d.date)}</span>
+             <div class="dl-title">${esc(d.title)}</div>
+           </a></li>`).join("") + `</ul>`
+      : `<p class="side-empty">No devlogs yet.</p>`;
+
+    app.innerHTML = `
+      <a class="back" href="#/">← all projects</a>
+      <div class="detail">
+        <div class="detail-main">
+          ${detailThumbs(p)}
+          <h1 class="detail-title">${esc(p.title)}</h1>
+          <p class="detail-desc">${esc(p.desc)}</p>
+          <div>${linkHTML}</div>
+        </div>
+        <aside class="detail-side">
+          <h2 class="side-h">devlogs</h2>
+          ${list}
+        </aside>
+      </div>`;
+    wireThumbs();
+  }
+
+  function viewDevlog(id, idx){
+    const p = postById(id);
+    if (!p) return viewHome();
+    if (p.card && p.card.static) return viewHome();
+    const logs = devlogsFor(id);
+    const d = logs[idx];
+    if (!d) return viewPost(id);
+    app.innerHTML = `
+      <a class="back" href="#/post/${encodeURIComponent(id)}">← ${esc(p.title)}</a>
+      <article class="reading">
+        <div class="read-date">${esc(d.date)}</div>
+        <h1 class="read-title">${esc(d.title)}</h1>
+        ${md(d.md)}
+      </article>`;
+  }
+
+  // ---- router with scroll restoration ----
+  let isFirstRoute = true;
+
+  function route(){
+    const h = location.hash.replace(/^#/, "");
+    let m;
+    if ((m = h.match(/^\/post\/([^\/]+)\/devlog\/(\d+)$/))) viewDevlog(decodeURIComponent(m[1]), +m[2]);
+    else if ((m = h.match(/^\/post\/([^\/]+)$/))) viewPost(decodeURIComponent(m[1]));
+    else viewHome();
+
+    if (isFirstRoute) {
+      // On the very first load, restore saved scroll position if hash matches
+      isFirstRoute = false;
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(STATE_KEY) || "{}");
+        if (saved.hash === location.hash && typeof saved.scrollY === "number") {
+          // Defer until paint so the DOM is measured correctly
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => { window.scrollTo(0, saved.scrollY); });
+          });
+          return; // skip scrollTo(0,0) below
+        }
+      } catch(e){}
+    }
+
+    window.scrollTo(0, 0);
+    saveState();
+  }
+
+  window.addEventListener("hashchange", () => { route(); });
+  route();
+})();
+</script>
+</body>
+</html>
